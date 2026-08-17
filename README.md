@@ -29,7 +29,7 @@ Builds and pushes `registry.local.rothwell.us/devilmonastery/renovate-worker:<ta
 via the remote BuildKit daemon (`BUILDER=remote`). `make build-local` builds
 without pushing.
 
-Tag convention: `<base-version>-worker-<n>`, e.g. `42.99.0-worker-1`. Bump
+Tag convention: `<base-version>-worker-<n>`, e.g. `44.32.2-worker-2`. Bump
 `WORKER_BUILD` (or the `TAG` variable) when the Dockerfile's pinned inputs
 change, then update the image reference in `deploy/renovate-manifests.yaml` in
 the same PR.

@@ -10,8 +10,8 @@
 
 REGISTRY ?= registry.local.rothwell.us/devilmonastery
 IMAGE    ?= renovate-worker
-RENOVATE_BASE_VERSION ?= 42.99.0
-WORKER_BUILD ?= 1
+RENOVATE_BASE_VERSION ?= 44.32.2
+WORKER_BUILD ?= 2
 TAG      ?= $(RENOVATE_BASE_VERSION)-worker-$(WORKER_BUILD)
 
 GO_VERSION ?=
