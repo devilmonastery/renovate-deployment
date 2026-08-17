@@ -144,6 +144,40 @@ spec:
         spec:
           serviceAccountName: renovate
           restartPolicy: Never
+          initContainers:
+            - name: netrc
+              image: "registry.local.rothwell.us/devilmonastery/renovate-worker:44.32.2-worker-2"
+              imagePullPolicy: IfNotPresent
+              command:
+                - sh
+                - -c
+                - |
+                  printf 'machine github.com\nlogin x-oauth-basic\npassword %s\nmachine api.github.com\nlogin x-oauth-basic\npassword %s\n' "$GITHUB_TOKEN" "$GITHUB_TOKEN" > /netrc/.netrc && chmod 600 /netrc/.netrc
+              env:
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: token
+                      name: renovate-github-token
+              securityContext:
+                capabilities:
+                  drop:
+                  - ALL
+                runAsGroup: 1000
+                runAsNonRoot: true
+                runAsUser: 1000
+                seccompProfile:
+                  type: RuntimeDefault
+              resources:
+                limits:
+                  cpu: 100m
+                  memory: 64Mi
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+              volumeMounts:
+                - name: netrc
+                  mountPath: /netrc
           containers:
             - name: renovate
               image: "registry.local.rothwell.us/devilmonastery/renovate-worker:44.32.2-worker-2"
@@ -152,6 +186,9 @@ spec:
                 - name: config-volume
                   mountPath: /usr/src/app/config.json
                   subPath: config.json
+                - name: netrc
+                  mountPath: /home/ubuntu/.netrc
+                  subPath: .netrc
               env:
                 - name: RENOVATE_CONFIG_FILE
                   value: /usr/src/app/config.json
@@ -165,6 +202,8 @@ spec:
                     secretKeyRef:
                       key: token
                       name: renovate-github-token
+                - name: GOPRIVATE
+                  value: github.com/devilmonastery/*,github.snooguts.net/*
               envFrom:
               securityContext:
                 capabilities:
@@ -186,3 +225,5 @@ spec:
             - name: config-volume
               secret:
                 secretName: renovate-config
+            - name: netrc
+              emptyDir: {}
