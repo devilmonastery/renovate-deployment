@@ -1,0 +1,183 @@
+---
+# Source: renovate/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: renovate
+  namespace: renovate
+  labels:
+    helm.sh/chart: renovate-44.15.1
+    app.kubernetes.io/name: renovate
+    app.kubernetes.io/instance: renovate
+    app.kubernetes.io/version: "41.140.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    app.kubernetes.io/managed-by: ArgoCD
+---
+# Source: renovate/templates/config.yaml
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: renovate-config
+  namespace: renovate
+  labels:
+    helm.sh/chart: renovate-44.15.1
+    app.kubernetes.io/name: renovate
+    app.kubernetes.io/instance: renovate
+    app.kubernetes.io/version: "41.140.1"
+    app.kubernetes.io/managed-by: Helm
+stringData:
+  config.json: |-
+    {
+      "platform": "github",
+      "endpoint": "https://api.github.com/",
+      "autodiscover": false,
+      "repositories": [
+        "devilmonastery/argo-root",
+        "devilmonastery/configs",
+        "devilmonastery/daisybot",
+        "devilmonastery/dashboards",
+        "devilmonastery/env-k8s-home",
+        "devilmonastery/financial-exporter",
+        "devilmonastery/hivemind",
+        "devilmonastery/homewiki",
+        "devilmonastery/infracode",
+        "devilmonastery/kube-web-view",
+        "devilmonastery/renovate-deployment"
+      ],
+      "onboarding": false,
+      "requireConfig": "optional",
+      "gitAuthor": "Renovate Bot <renovate@devilmonastery.com>",
+      "timezone": "UTC",
+      "dependencyDashboard": false,
+      "suppressNotifications": ["prIgnoreNotification"],
+      "prHourlyLimit": 2,
+      "prConcurrentLimit": 4,
+      "commitMessagePrefix": "chore:",
+      "semanticCommits": "enabled",
+      "enabledManagers": ["dockerfile", "docker-compose", "github-actions", "gomod", "helm-values", "helmv3", "kubernetes"],
+      "gitIgnoredAuthors": ["noreply@github.com"],
+      "packageRules": [
+        {
+          "description": "Group Helm chart updates",
+          "matchManagers": ["helmv3", "helm-values"],
+          "groupName": "helm charts",
+          "commitMessageTopic": "{{groupName}}"
+        },
+        {
+          "description": "Group Docker image updates",
+          "matchManagers": ["dockerfile", "docker-compose"],
+          "groupName": "docker images",
+          "commitMessageTopic": "{{groupName}}"
+        },
+        {
+          "description": "Group GitHub Actions updates",
+          "matchManagers": ["github-actions"],
+          "groupName": "github actions",
+          "commitMessageTopic": "{{groupName}}"
+        },
+        {
+          "description": "Trusted packages - create PRs for manual review",
+          "matchPackagePatterns": [
+            "^prometheus-community/",
+            "^traefik/",
+            "^jetstack/",
+            "^metallb/"
+          ],
+          "matchUpdateTypes": ["minor", "patch"],
+          "automerge": false,
+          "reviewersFromCodeOwners": true
+        },
+        {
+          "description": "Infracode dependencies require manual review",
+          "matchManagers": ["gomod"],
+          "matchPackageNames": [
+            "github.com/devilmonastery/infracode",
+            "github.com/devilmonastery/env-k8s-home"
+          ],
+          "automerge": false
+        }
+      ],
+      "gomod": {
+        "fileMatch": ["(^|/)go\\.mod$"]
+      },
+      "helm-values": {
+        "fileMatch": ["(^|/)values\\.ya?ml$"]
+      },
+      "kubernetes": {
+        "fileMatch": ["(^|/)[^/]*\\.ya?ml$"],
+        "ignorePaths": [
+          "**/secrets/**"
+        ]
+      }
+    }
+---
+# Source: renovate/templates/cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: renovate
+  namespace: renovate
+  labels:
+    helm.sh/chart: renovate-44.15.1
+    app.kubernetes.io/name: renovate
+    app.kubernetes.io/instance: renovate
+    app.kubernetes.io/version: "41.140.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    app.kubernetes.io/managed-by: ArgoCD
+spec:
+  schedule: "0 2 * * *"
+  timeZone: UTC
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: renovate
+        app.kubernetes.io/instance: renovate
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: renovate
+            app.kubernetes.io/instance: renovate
+        spec:
+          serviceAccountName: renovate
+          restartPolicy: Never
+          containers:
+            - name: renovate
+              image: "registry.local.rothwell.us/devilmonastery/renovate-worker:42.99.0-worker-1"
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: config-volume
+                  mountPath: /usr/src/app/config.json
+                  subPath: config.json
+              env:
+                - name: RENOVATE_CONFIG_FILE
+                  value: /usr/src/app/config.json
+                - name: RENOVATE_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: token
+                      name: renovate-github-token
+              envFrom:
+              securityContext:
+                capabilities:
+                  drop:
+                  - ALL
+                runAsGroup: 1000
+                runAsNonRoot: true
+                runAsUser: 1000
+                seccompProfile:
+                  type: RuntimeDefault
+              resources:
+                limits:
+                  cpu: 2000m
+                  memory: 4Gi
+                requests:
+                  cpu: 500m
+                  memory: 1Gi
+          volumes:
+            - name: config-volume
+              secret:
+                secretName: renovate-config
