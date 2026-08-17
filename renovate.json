@@ -5,18 +5,18 @@
   "semanticCommits": true,
   "prHourlyLimit": 2,
   "prConcurrentLimit": 4,
+  "fileMatching": [
+    "**/Dockerfile",
+    "**/go.mod",
+    "**/go.sum",
+    "deploy/**"
+  ],
   "postUpgradeTasks": {
     "commands": [
-      "make generate",
-      "git add -A",
-      "git diff --quiet --cached || git commit -m 'chore(deps): regenerate infracode artifacts after upgrades'"
+      "test -n \"${GITHUB_TOKEN:-}\" \u0026\u0026 printf 'machine github.com\\nlogin x-oauth-basic\\npassword %s\\nmachine api.github.com\\nlogin x-oauth-basic\\npassword %s\\n' \"$GITHUB_TOKEN\" \"$GITHUB_TOKEN\" \u003e \"${HOME:-/tmp}/.netrc\" \u0026\u0026 chmod 600 \"${HOME:-/tmp}/.netrc\" || true",
+      "GOPRIVATE='github.com/devilmonastery/*,github.snooguts.net/*' make generate"
     ],
-    "fileMatching": [
-      ".drone.yml",
-      ".infracode/**",
-      "Makefile.infracode"
-    ],
-    "executionMode": "graceful"
+    "executionMode": "branch"
   },
   "packageRules": []
 }

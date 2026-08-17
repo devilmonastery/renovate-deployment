@@ -160,6 +160,11 @@ spec:
                     secretKeyRef:
                       key: token
                       name: renovate-github-token
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: token
+                      name: renovate-github-token
               envFrom:
               securityContext:
                 capabilities:
