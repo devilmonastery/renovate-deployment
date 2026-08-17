@@ -3,12 +3,6 @@
   "semanticCommits": true,
   "prHourlyLimit": 2,
   "prConcurrentLimit": 4,
-  "fileMatching": [
-    "**/Dockerfile",
-    "**/go.mod",
-    "**/go.sum",
-    "deploy/**"
-  ],
   "postUpgradeTasks": {
     "commands": [
       "test -n \"${GITHUB_TOKEN:-}\" \u0026\u0026 printf 'machine github.com\\nlogin x-oauth-basic\\npassword %s\\nmachine api.github.com\\nlogin x-oauth-basic\\npassword %s\\n' \"$GITHUB_TOKEN\" \"$GITHUB_TOKEN\" \u003e \"${HOME:-/tmp}/.netrc\" \u0026\u0026 chmod 600 \"${HOME:-/tmp}/.netrc\" || true",
