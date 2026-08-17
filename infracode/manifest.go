@@ -23,5 +23,7 @@ func Generate(gen *infragen.Generator) {
 		drone.WithBuildKitBuild(dockerRegistry, workerImage),
 		drone.WithBuildKitHost("tcp://buildkitd.homes.svc.cluster.local:1234"),
 	)
-	renovate.New(gen)
+	renovate.New(gen,
+		renovate.WithFileMatches("**/Dockerfile", "deploy/**"),
+	)
 }
