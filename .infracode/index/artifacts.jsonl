@@ -2,4 +2,4 @@
 # Edit source manifests, run `make generate`, and commit the generated artifacts.
 {"id":"cicd.drone/pipeline:.drone.yml","producer":"cicd.drone","route":"cicd.drone/pipeline","routeMode":"mirror","canonicalPath":".drone.yml","paths":[".drone.yml",".infracode/generated/.drone.yml"],"sha256":"9d155f1a9ae96f6e7d58e461796385923c35e922b5550628d596a42adc5e1be4"}
 {"id":"makefile/handoff:Makefile.infracode","producer":"makefile","route":"makefile/handoff","routeMode":"mirror","canonicalPath":"Makefile.infracode","paths":[".infracode/generated/Makefile.infracode","Makefile.infracode"],"sha256":"8cfe8a6a5f41e2e814f35af48932278b88eede7f64e007b39eb6967e101feabe"}
-{"id":"renovate/root:renovate.json","producer":"renovate","route":"renovate/root","routeMode":"direct","canonicalPath":"renovate.json","paths":["renovate.json"],"sha256":"2206b4d26b087f61e825422364e53745a943c82d1aae9ddec27d14c0d3e0bbaf"}
+{"id":"renovate/root:renovate.json","producer":"renovate","route":"renovate/root","routeMode":"direct","canonicalPath":"renovate.json","paths":["renovate.json"],"sha256":"6e1cfec61d8a869d655d17dbe259998b81fb66e4f75884495c3ef66de8fe5dc5"}
