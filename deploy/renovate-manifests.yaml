@@ -54,6 +54,10 @@ stringData:
       "suppressNotifications": ["prIgnoreNotification"],
       "prHourlyLimit": 2,
       "prConcurrentLimit": 4,
+      "allowedCommands": [
+        "^test -n \"\\$\\{GITHUB_TOKEN",
+        "^GOPRIVATE='github\\.com/devilmonastery/\\*,github\\.snooguts\\.net/\\*' make generate$"
+      ],
       "commitMessagePrefix": "chore:",
       "semanticCommits": "enabled",
       "enabledManagers": ["dockerfile", "docker-compose", "github-actions", "gomod", "helm-values", "helmv3", "kubernetes"],
