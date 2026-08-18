@@ -21,8 +21,16 @@ RUN wget -q -O /tmp/go.tgz "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
 # Private Go modules are fetched with a token: insteadOf rewrites the SSH
 # form of github.com URLs to HTTPS, and callers (Drone CI, the worker
 # entrypoint wrapper) materialize a ~/.netrc from the token secret.
-RUN git config --global url."https://github.com/".insteadOf "git@github.com:"
+# --system so the rewrite is visible to every UID, incl. the runtime user.
+RUN git config --system url."https://github.com/".insteadOf "git@github.com:"
+
+# The runtime user needs a writable HOME: go build cache, module cache and
+# the materialized ~/.netrc all live under it. The base image's HOME is not
+# writable by our UID.
+RUN mkdir -p /home/renovate/.cache/go-build /home/renovate/go \
+ && chown -R 12021:12021 /home/renovate
 
 USER 12021
 
 ENV PATH="/usr/local/go/bin:${PATH}"
+ENV HOME=/home/renovate
