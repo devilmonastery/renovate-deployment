@@ -150,7 +150,7 @@ spec:
           restartPolicy: Never
           initContainers:
             - name: netrc
-              image: "registry.local.rothwell.us/devilmonastery/renovate-worker:44.32.2-worker-2"
+              image: "registry.local.rothwell.us/devilmonastery/renovate-worker:44.33.2-worker-1"
               imagePullPolicy: IfNotPresent
               command:
                 - sh
@@ -184,7 +184,7 @@ spec:
                   mountPath: /netrc
           containers:
             - name: renovate
-              image: "registry.local.rothwell.us/devilmonastery/renovate-worker:44.32.2-worker-2"
+              image: "registry.local.rothwell.us/devilmonastery/renovate-worker:44.33.2-worker-1"
               imagePullPolicy: IfNotPresent
               volumeMounts:
                 - name: config-volume
