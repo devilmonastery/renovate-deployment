@@ -25,19 +25,21 @@ RUN wget -q -O /tmp/go.tgz "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
 RUN git config --system url."https://github.com/".insteadOf "git@github.com:"
 
 # The runtime user needs a writable HOME: go build cache, module cache and
-# the materialized ~/.netrc all live under it. The base image's HOME is not
-# writable by our UID.
+# the materialized ~/.netrc all live under it. The pod spec pins
+# runAsUser: 1000 (containerbase's default uid), which overrides any image
+# USER, so the writable dirs are owned by 1000.
 RUN mkdir -p /home/renovate/.cache/go-build /home/renovate/go \
- && chown -R 12021:12021 /home/renovate
+ && chown -R 1000:1000 /home/renovate
 
 # Some child processes (e.g. go spawned by make in a post-upgrade task) lose
-# the HOME env var and fall back to the passwd home for uid 12021, which is
-# /home/ubuntu in the base image. Keep that fallback path writable too so
-# GOCACHE and GOMODCACHE resolve to a working directory in every case.
-RUN chown -R 12021:12021 /home/ubuntu \
- && mkdir -p /home/ubuntu/.cache/go-build /home/ubuntu/go
+# the HOME env var and fall back to the passwd home (/home/ubuntu in the
+# base image). Keep that fallback path writable too so GOCACHE and
+# GOMODCACHE resolve to a working directory in every case.
+RUN chown -R 1000:1000 /home/ubuntu \
+ && mkdir -p /home/ubuntu/.cache/go-build /home/ubuntu/go \
+ && chown 1000:1000 /home/ubuntu/.cache /home/ubuntu/go
 
-USER 12021
+USER 1000
 
 ENV PATH="/usr/local/go/bin:${PATH}"
 ENV HOME=/home/renovate
