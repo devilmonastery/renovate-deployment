@@ -30,6 +30,13 @@ RUN git config --system url."https://github.com/".insteadOf "git@github.com:"
 RUN mkdir -p /home/renovate/.cache/go-build /home/renovate/go \
  && chown -R 12021:12021 /home/renovate
 
+# Some child processes (e.g. go spawned by make in a post-upgrade task) lose
+# the HOME env var and fall back to the passwd home for uid 12021, which is
+# /home/ubuntu in the base image. Keep that fallback path writable too so
+# GOCACHE and GOMODCACHE resolve to a working directory in every case.
+RUN chown -R 12021:12021 /home/ubuntu \
+ && mkdir -p /home/ubuntu/.cache/go-build /home/ubuntu/go
+
 USER 12021
 
 ENV PATH="/usr/local/go/bin:${PATH}"
