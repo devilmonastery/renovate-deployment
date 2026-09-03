@@ -3,8 +3,8 @@
 {
   "paths": {
     ".drone.yml": "cicd.drone/pipeline:.drone.yml",
-    ".infracode/generated/.drone.yml": "cicd.drone/pipeline:.drone.yml",
-    ".infracode/generated/Makefile.infracode": "makefile/handoff:Makefile.infracode",
+    ".infracode/.drone.yml": "cicd.drone/pipeline:.drone.yml",
+    ".infracode/Makefile.infracode": "makefile/handoff:Makefile.infracode",
     "Makefile.infracode": "makefile/handoff:Makefile.infracode",
     "renovate.json": "renovate/root:renovate.json"
   }
