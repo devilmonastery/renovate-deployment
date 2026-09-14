@@ -57,7 +57,7 @@ stringData:
       "allowShellExecutorForPostUpgradeCommands": true,
       "allowedCommands": [
         "^test -n \"\\$\\{GITHUB_TOKEN",
-        "^GOPATH=/home/renovate/go GOCACHE=/home/renovate/.cache/go-build GOMODCACHE=/home/renovate/go/pkg/mod GOPRIVATE='github\\.com/devilmonastery/\\*,github\\.example\\.net/\\*' make generate$"
+        "^GOPATH=/home/renovate/go GOCACHE=/home/renovate/.cache/go-build GOMODCACHE=/home/renovate/go/pkg/mod GOPRIVATE='github\\.com/devilmonastery/\\*' make generate$"
       ],
       "commitMessagePrefix": "chore:",
       "semanticCommits": "enabled",
@@ -208,7 +208,7 @@ spec:
                       key: token
                       name: renovate-github-token
                 - name: GOPRIVATE
-                  value: github.com/devilmonastery/*,github.example.com/*
+                  value: github.com/devilmonastery/*
               envFrom:
               securityContext:
                 capabilities:
