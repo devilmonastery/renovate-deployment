@@ -1,5 +1,5 @@
 # renovate: pin Renovate base image
-ARG RENOVATE_BASE=ghcr.io/renovatebot/renovate:44.33.2
+ARG RENOVATE_BASE=ghcr.io/renovatebot/renovate:44.33.2@sha256:fe47c58a918726ecb9efa7837735e2a7c6eed44e0181ab2c7b14738b84df0a21
 FROM ${RENOVATE_BASE}
 
 # Pinned inputs. Override on the CLI if needed, e.g.
