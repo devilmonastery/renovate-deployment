@@ -100,7 +100,7 @@ steps:
   - name: buildkit-build
     image: docker.io/moby/buildkit:v0.26.2
     commands:
-      - buildctl --addr tcp://buildkitd.homes.svc.cluster.local:1234 build --frontend dockerfile.v0 --local context=. --local dockerfile=. --exporter image --exporter-opt "name=registry.local.rothwell.us/devilmonastery/renovate-worker:${DRONE_COMMIT_SHA}" --exporter-opt push=true
+      - buildctl --addr tcp://buildkitd.homes.svc.cluster.local:1234 build --frontend dockerfile.v0 --local context=. --local dockerfile=. --import-cache type=registry,ref=registry.local.rothwell.us/devilmonastery/cache/renovate-worker --export-cache type=registry,ref=registry.local.rothwell.us/devilmonastery/cache/renovate-worker,mode=max,image-manifest=true,oci-mediatypes=true --exporter image --exporter-opt "name=registry.local.rothwell.us/devilmonastery/renovate-worker:${DRONE_COMMIT_SHA}" --exporter-opt push=true
     when:
       event:
         - push
